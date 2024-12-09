@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Paint App</title>
+    <link rel="stylesheet" href="./app.css">
+</head>
+<body>
+    <h1><center>Simple Paint App</center></h1>
+    <canvas class="main" width="800px" height="400px"></canvas>
+    <br>
+    <button id="resetButton">Reset</button>
+    <p id="status"></p> <!-- Added statusText element -->
+    <script>
+        const canvas = document.getElementsByClassName("main")[0]; // Access the first canvas element
+        const resetButton = document.getElementById("resetButton");
+        const statusText = document.getElementById("status"); // Ensure this element exists in your HTML
+        const cxt = canvas.getContext("2d");
+
+        let isDrawing = false;
+        let X = 0;
+        let Y = 0;
+        let circles = [];  
+
+        function getColor() {
+            const letters = "0123456789ABCDEF";
+            let colors = "#";
+            for (let i = 0; i < 6; i++) {
+                colors += letters[Math.floor(Math.random() * 16)];
+            }
+            return colors;
+        }
+
+        function drawCircles() {
+            cxt.clearRect(0, 0, canvas.width, canvas.height); 
+            circles.forEach(circle => {
+                cxt.beginPath();
+                cxt.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
+                cxt.fillStyle = circle.color;
+                cxt.fill();
+            });
+        }
+
+        function isHit(x, y) {
+            for (let i = 0; i < circles.length; i++) {
+                const dist = Math.sqrt(Math.pow(x - circles[i].x, 2) + Math.pow(y - circles[i].y, 2));
+                if (dist <= circles[i].radius) {
+                    return i;  
+                }
+            }
+            return -1;  
+        }
+
+        canvas.addEventListener("mousedown", function(e) {
+            isDrawing = true;
+            X = e.offsetX;
+            Y = e.offsetY;
+
+            const hitIndex = isHit(X, Y);
+            if (hitIndex !== -1) { 
+                statusText.textContent = "Hit";  
+            } else {
+                statusText.textContent = "Miss";
+            }
+        });
+
+        canvas.addEventListener("mouseup", function(e) {
+            if (!isDrawing) return;
+            isDrawing = false;
+
+            const endX = e.offsetX;
+            const endY = e.offsetY;
+
+            const radius = Math.sqrt(Math.pow(endX - X, 2) + Math.pow(endY - Y, 2));
+            const color = getColor();
+
+            circles.push({ x: X, y: Y, radius: radius, color: color });
+            drawCircles(); 
+        });
+
+        canvas.addEventListener("dblclick", function(e) {
+            const clickX = e.offsetX;
+            const clickY = e.offsetY;
+
+            const hitIndex = isHit(clickX, clickY);
+            if (hitIndex !== -1) {
+                circles.splice(hitIndex, 1);  
+                drawCircles();  
+                statusText.textContent = "Circle deleted";  
+            }
+        });
+
+        resetButton.addEventListener("click", function() {
+            circles = [];  
+            cxt.clearRect(0, 0, canvas.width, canvas.height); 
+            statusText.textContent = "";  
+        });
+    </script>
+</body>
+</html>
