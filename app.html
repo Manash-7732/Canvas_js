@@ -11,11 +11,11 @@
     <canvas class="main" width="800px" height="400px"></canvas>
     <br>
     <button id="resetButton">Reset</button>
-    <p id="status"></p> <!-- Added statusText element -->
+    <p id="status"></p>
     <script>
-        const canvas = document.getElementsByClassName("main")[0]; // Access the first canvas element
+        const canvas = document.getElementsByClassName("main")[0]; 
         const resetButton = document.getElementById("resetButton");
-        const statusText = document.getElementById("status"); // Ensure this element exists in your HTML
+        const statusText = document.getElementById("status");
         const cxt = canvas.getContext("2d");
 
         let isDrawing = false;
